@@ -18,13 +18,27 @@ resource "azurerm_network_security_group" "network_security_group" {
 resource "azurerm_network_security_rule" "network_security_rule" {
   count                       = "${length(local.ports)}"
   name                        = "${element(keys(local.ports), count.index)}"
-  priority                    = "${count.index + 200}"
+  priority                    = "${count.index + 100}"
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "*"
   source_port_range           = "*"
   destination_port_range      = "${element(values(local.ports), count.index)}"
-  source_address_prefix       = "VirtualNetwork"
+  source_address_prefixes     = ["${data.azurerm_virtual_network.virtual_network.address_spaces}"]
+  destination_address_prefix  = "*"
+  resource_group_name         = "${azurerm_resource_group.resource_group.name}"
+  network_security_group_name = "${azurerm_network_security_group.network_security_group.name}"
+}
+
+resource "azurerm_network_security_rule" "network_security_rule_load_balancer" {
+  name                        = "loadbalancer"
+  priority                    = 4095
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = "AzureLoadBalancer"
   destination_address_prefix  = "*"
   resource_group_name         = "${azurerm_resource_group.resource_group.name}"
   network_security_group_name = "${azurerm_network_security_group.network_security_group.name}"
@@ -32,7 +46,7 @@ resource "azurerm_network_security_rule" "network_security_rule" {
 
 resource "azurerm_network_security_rule" "network_security_rule_deny" {
   name                        = "deny"
-  priority                    = 1000
+  priority                    = 4096
   direction                   = "Inbound"
   access                      = "Deny"
   protocol                    = "*"
