@@ -30,6 +30,20 @@ resource "azurerm_network_security_rule" "network_security_rule" {
   network_security_group_name = "${azurerm_network_security_group.network_security_group.name}"
 }
 
+resource "azurerm_network_security_rule" "network_security_rule_http" {
+  name                        = "httpvnet"
+  priority                    = "200"
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "8500"
+  source_address_prefix       = "VirtualNetwork"
+  destination_address_prefix  = "*"
+  resource_group_name         = "${azurerm_resource_group.resource_group.name}"
+  network_security_group_name = "${azurerm_network_security_group.network_security_group.name}"
+}
+
 resource "azurerm_network_security_rule" "network_security_rule_load_balancer" {
   name                        = "loadbalancer"
   priority                    = 4095
