@@ -119,7 +119,7 @@ resource "azurerm_virtual_machine" "virtual_machine" {
   os_profile {
     computer_name  = "${local.name}-${format("%02d", count.index)}"
     admin_username = "azureuser"
-    admin_password = "Qwerty12345^"
+    admin_password = "${var.admin_password}"
     custom_data    = "${element(data.ignition_config.config.*.rendered, count.index)}"
   }
 

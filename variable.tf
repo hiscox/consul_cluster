@@ -31,6 +31,8 @@ variable "vm_count" {
   default = 3
 }
 
+variable "admin_password" {}
+
 variable "tags" {
   type    = "map"
   default = {}
